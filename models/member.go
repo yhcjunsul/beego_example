@@ -2,12 +2,14 @@ package models
 
 import (
 	"fmt"
+
+	"github.com/astaxie/beego/orm"
 )
 
 type Member struct {
-	ID       string `json:"id"`
-	Password string `json:"password"`
-	Name     string `json:"name"`
+	ID       string `json:"id" orm:"pk"`
+	Password string `json:"password" orm:"size(100)"`
+	Name     string `json:"name" orm:"size(100)"`
 }
 
 // NewMember creates a new member given a id, password and name that can't be empty.
@@ -31,4 +33,8 @@ func (m *Member) CheckPassword(password string) bool {
 	}
 
 	return false
+}
+
+func init() {
+	orm.RegisterModel(new(Member))
 }

@@ -51,6 +51,8 @@ func (this *MemberController) NewMember() {
 		this.Ctx.Output.Body([]byte(err.Error()))
 		return
 	}
+
+	beego.Info("new member, id:", id, "password:", password, "name:", name)
 }
 
 // Examples:

@@ -35,6 +35,8 @@ func (this *LoginController) Login() {
 		return
 	}
 
+	beego.Info("login, id:", id, "password:", password)
+
 	member, isFound := models.DefaultMemberList.Find(id)
 	if isFound == false {
 		this.Ctx.Output.SetStatus(404)
@@ -47,4 +49,6 @@ func (this *LoginController) Login() {
 		this.Ctx.Output.Body([]byte("invalid password"))
 		return
 	}
+
+	beego.Info("login, success")
 }
