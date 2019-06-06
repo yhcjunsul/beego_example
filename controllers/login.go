@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"ex_login_chul/models"
+	"github.com/yhcjunsul/beego_example/models"
 
 	"github.com/astaxie/beego"
 )

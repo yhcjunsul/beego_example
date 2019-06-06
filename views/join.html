@@ -1,13 +1,29 @@
 <!DOCTYPE html>
+<html>
 
-<form method="post" id="authForm" action="http://localhost:8090/member">
-  <div>
-    <label for="id">아이디</label>
-    <input id="id" name="id" >
-    <label for="password">비밀번호</label>
-    <input type="password" id="password" name="password" >
-    <label for="name">이름</label>
-    <input id="name" name="name" >
-  </div>
-  <button type="submit">회원가입</button>
-</form>
+<head>
+    <title>Join</title>
+</head>
+
+<body>
+    <h2>Join</h2>
+
+    <form id="join" @submit.prevent="joinPost">
+        <label>{{idLabel}}</label>
+        <input v-bind:placeholder="idLabel" v-model="id">
+        <label>{{passwordLabel}}</label>
+        <input type="password" v-bind:placeholder="passwordLabel" v-model="password">
+        <label>{{nameLabel}}</label>
+        <input v-bind:placeholder="nameLabel" v-model="name">
+
+        <button type="submit">{{joinButtonLabel}}</button>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="/static/js/join.js"></script>
+
+</body>
+
+
+</html>

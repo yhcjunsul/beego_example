@@ -12,6 +12,10 @@ type Member struct {
 	Name     string `json:"name" orm:"size(100)"`
 }
 
+func init() {
+	orm.RegisterModel(new(Member))
+}
+
 // NewMember creates a new member given a id, password and name that can't be empty.
 func NewMember(id string, password string, name string) (*Member, error) {
 	if id == "" {
@@ -33,8 +37,4 @@ func (m *Member) CheckPassword(password string) bool {
 	}
 
 	return false
-}
-
-func init() {
-	orm.RegisterModel(new(Member))
 }
