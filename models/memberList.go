@@ -14,42 +14,13 @@ func init() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 	orm.RegisterDataBase("default", "mysql", "root:root@/ex_login?charset=utf8")
 
-	//DefaultMemberList = NewInMemoryMemberList()
 	DefaultMemberList = NewMySQLMemberList()
 }
 
 type MemberList interface {
 	Add(member *Member) error
 	Find(id string) (*Member, bool)
-}
-
-type InMemoryMemberList struct {
-	members map[string]*Member
-}
-
-func NewInMemoryMemberList() *InMemoryMemberList {
-	var memberList InMemoryMemberList
-	memberList.members = make(map[string]*Member)
-	return &memberList
-}
-
-func (m *InMemoryMemberList) Add(member *Member) error {
-	if m.members[member.ID] != nil {
-		return fmt.Errorf("Duplicated ID")
-	}
-
-	m.members[member.ID] = member
-	return nil
-}
-
-func (m *InMemoryMemberList) Find(id string) (*Member, bool) {
-	foundMember, ok := m.members[id]
-
-	if ok == false {
-		return nil, false
-	}
-
-	return foundMember, true
+	GetAll() ([]*Member, error)
 }
 
 type MySQLMemberList struct {
@@ -95,4 +66,17 @@ func (m *MySQLMemberList) Find(id string) (*Member, bool) {
 	beego.Info("find, success")
 
 	return &foundMember, true
+}
+
+func (m *MySQLMemberList) GetAll() ([]*Member, error) {
+	var members []*Member
+	num, err := m.db.QueryTable("member").All(&members)
+
+	if err != nil {
+		beego.Error("Failed to get all members, err:" + err.Error())
+		return members, err
+	}
+	beego.Info(fmt.Sprintf("Returned member count:%v", num))
+
+	return members, nil
 }

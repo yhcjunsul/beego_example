@@ -10,6 +10,11 @@ type MemberController struct {
 	beego.Controller
 }
 
+type MemberExceptPwd struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 // Examples:
 //
 //   req: POST /member/ ["id": "", "password":"", "name":""]
@@ -72,9 +77,36 @@ func (this *MemberController) GetMember() {
 		this.Ctx.Output.Body([]byte("member not found"))
 		return
 	}
-	this.Data["json"] = struct {
-		ID   string `json:"id"`
-		Name string `json:"name"`
-	}{member.ID, member.Name}
+	this.Data["json"] = MemberExceptPwd{member.ID, member.Name}
+
+	this.ServeJSON()
+}
+
+// Examples:
+//
+//   req: GET /member
+//   res: 200 {[{"id": "ldgmart", "name": "daegyu"}]}
+//		  400 db error
+//
+func (this *MemberController) GetAllMembers() {
+	beego.Info("get all members")
+
+	members, err := models.DefaultMemberList.GetAll()
+
+	if err != nil {
+		this.Ctx.Output.SetStatus(400)
+		this.Ctx.Output.Body([]byte("get all members error:" + err.Error()))
+		return
+	}
+
+	var membersExceptPwd []MemberExceptPwd
+
+	for _, member := range members {
+		membersExceptPwd = append(membersExceptPwd, MemberExceptPwd{member.ID, member.Name})
+	}
+
+	this.Data["json"] = membersExceptPwd
+
+	beego.Info(this.Data["json"])
 	this.ServeJSON()
 }

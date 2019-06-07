@@ -18,11 +18,10 @@ func init() {
 	beego.TestBeegoInit(apppath)
 }
 
-// TestBeego is a sample to run an endpoint test
-func TestBeego(t *testing.T) {
-	r, _ := http.NewRequest("GET", "/", nil)
+func TestMember(t *testing.T) {
+	r, _ := http.NewRequest("GET", "/member", nil)
 	w := httptest.NewRecorder()
 	beego.BeeApp.Handlers.ServeHTTP(w, r)
 
-	beego.Trace("testing", "TestBeego", "Code[%d]\n%s", w.Code, w.Body.String())
+	beego.Trace("testing", "TestMember", "Code[%d]\n%s", w.Code, w.Body.String())
 }
