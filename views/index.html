@@ -17,7 +17,6 @@
         })
 
         const LogIn = {
-            el: '#login',
             data: function() {
                 return {
                     id: '',
@@ -45,7 +44,7 @@
                     router.push("/join")
                 }
             },
-            template: '<div id="login">' +
+            template: '<div>' +
                 '<h2>Log in</h2>' +
                 '<form @submit.prevent="loginPost">' +
                 '<label>{{idLabel}}</label>' +
@@ -61,7 +60,6 @@
         }
 
         const Join = {
-            el: '#join',
             data: function() {
                 return {
                     id: '',
@@ -88,7 +86,7 @@
                     })
                 }
             },
-            template: '<div id="join">' +
+            template: '<div>' +
                 '<h2>Join</h2>' +
                 '<form @submit.prevent="joinPost">' +
                 '<label>{{idLabel}}</label>' +
@@ -102,7 +100,6 @@
         }
 
         const MemberList = {
-            el: '#member-list',
             data() {
                 return {
                     members: []
@@ -113,7 +110,7 @@
                     this.members = response.data
                 })
             },
-            template: '<div id="member-list">' +
+            template: '<div>' +
                 '<h2>Member list</h2>' +
                 '<member-list :members="members"></member-list>' +
                 '</div>'
