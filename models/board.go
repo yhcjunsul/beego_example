@@ -5,25 +5,25 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/pkg/errors"
 )
 
 type Board struct {
-	Id            int            `orm:"pk"`
-	Name          string         `orm:"size(100)"`
-	BoardCategory *BoardCategory `orm:"reverse(one)"`
-	IsDeleted     bool           `orm:"default(false)"`
-}
-
-func init() {
-	orm.RegisterModel(new(Board))
+	Id            int            `json:"id"`
+	Name          string         `json:"name" orm:"size(100)"`
+	IsDeleted     bool           `json:"is_deleted" orm:"default(false)"`
+	BoardCategory *BoardCategory `json:"board_category" orm:"rel(fk)"`
+	Posts         []*Post        `orm:"reverse(many)"`
 }
 
 func AddBoard(b *Board) error {
 	o := orm.NewOrm()
-	board := Board{Name: b.BoardName, BoardCategory: b.BoardCategory}
+	board := Board{Name: b.Name, BoardCategory: b.BoardCategory}
 
-	if isCreated, id, err := o.ReadOrCreate(&board, "Name", "BoardCategory"); err != nil {
-		return err
+	isCreated, id, err := o.ReadOrCreate(&board, "Name", "BoardCategory")
+
+	if err != nil {
+		return errors.Wrap(err, "read or create fail")
 	}
 
 	if isCreated == false {
@@ -31,8 +31,8 @@ func AddBoard(b *Board) error {
 			id, b.Name, b.BoardCategory.Name)
 	}
 
-	beego.Info(fmt.Sprintf("Success to add board, id:%d, board name:%s, category name:%s",
-		id, b.Name, b.BoardCategory.Name))
+	beego.Info("Success to add board, id:%d, board name:%s, category name:%s",
+		id, b.Name, b.BoardCategory.Name)
 
 	return nil
 }
@@ -42,10 +42,10 @@ func FindBoardById(id int) (*Board, error) {
 	board := Board{Id: id}
 
 	if err := o.Read(&board); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "read fail")
 	}
 
-	beego.Info("Success to find board, id:" + id + ", name:" + board.Name)
+	beego.Info("Success to find board, id:%d, name:%s", id, board.Name)
 
 	return &board, nil
 }
@@ -55,19 +55,21 @@ func UpdateBoard(b *Board) error {
 	tmpForChecking := Board{Id: b.Id}
 
 	if err := o.Read(&tmpForChecking); err != nil {
-		return err
+		return errors.Wrap(err, "read fail")
 	}
 
-	if num, err := o.Update(b); err != nil {
-		return err
+	num, err := o.Update(b)
+
+	if err != nil {
+		return errors.Wrap(err, "update fail")
 	}
 
 	if num == 0 {
 		return fmt.Errorf("Failed to update board, board not found, id:%d", b.Id)
 	}
 
-	beego.Info(fmt.Sprint("Success to update board, id:%d, name:%s, category name:%s",
-		b.Id, b.Name, b.BoardCategory.Name))
+	beego.Info("Success to update board, id:%d, name:%s, category name:%s",
+		b.Id, b.Name, b.BoardCategory.Name)
 
 	return nil
 }
@@ -75,11 +77,34 @@ func UpdateBoard(b *Board) error {
 func DeleteBoard(id int) error {
 	o := orm.NewOrm()
 
-	if _, err := o.Delete(&Board{Id: id}); err != nil {
-		return err
+	num, err := o.Delete(&Board{Id: id})
+	if err != nil {
+		return errors.Wrap(err, "delete fail")
 	}
 
-	beego.Info("Success to delete board, id:" + id)
+	if num == 0 {
+		return errors.Errorf("Not found board for deleting board")
+	}
+
+	beego.Info("Success to delete board, id:%d", id)
+
+	return nil
+}
+
+func SetBoardDeleteFlag(id int, isDeleted bool) error {
+	o := orm.NewOrm()
+	board := Board{Id: id}
+
+	if err := o.Read(&board); err != nil {
+		return errors.Wrap(err, "read fail")
+	}
+
+	board.IsDeleted = isDeleted
+	if _, err := o.Update(&board); err != nil {
+		return errors.Wrap(err, "update fail")
+	}
+
+	beego.Info("Success to set board close flag, id:%d, flag:%v", id, isDeleted)
 
 	return nil
 }
@@ -90,7 +115,7 @@ func GetBoardsByCategory(category *BoardCategory) ([]*Board, error) {
 
 	num, err := o.QueryTable(new(Board)).Filter("BoardCategory__Id", category.Id).All(&bs)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "query by category fail")
 	}
 
 	beego.Info("Success to get board by category, category name:%s, num:%d",
@@ -105,10 +130,10 @@ func GetAllBoards() ([]*Board, error) {
 
 	num, err := o.QueryTable(new(Board)).All(&bs)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "query all fail")
 	}
 
-	beego.Info("Success to get all board, board count:" + num)
+	beego.Info("Success to get all board, board count:%d", num)
 
 	return bs, nil
 }

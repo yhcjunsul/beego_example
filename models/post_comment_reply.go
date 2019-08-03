@@ -6,19 +6,16 @@ import (
 
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
+	"github.com/pkg/errors"
 )
 
 type PostCommentReply struct {
-	Id          int          `orm:"pk"`
-	Contents    string       `orm:"size(4000)"`
-	Ip          string       `orm:"type(char)"`
-	IsDeleted   bool         `orm:"default(false)"`
-	CreatedTime time.Time    `orm:"auto_now_add"`
-	PostComment *PostComment `orm:"rel(fk)"`
-}
-
-func init() {
-	orm.RegisterModel(new(PostCommentReply))
+	Id          int          `json:"id"`
+	Contents    string       `json:"contents" orm:"size(4000)"`
+	Ip          string       `json:"ip" orm:"type(char)"`
+	IsDeleted   bool         `json:"is_deleted" orm:"default(false)"`
+	CreatedTime time.Time    `json:"created_time" orm:"auto_now_add"`
+	PostComment *PostComment `json:"post_comment" orm:"rel(fk)"`
 }
 
 func AddPostCommentReply(r *PostCommentReply) error {
@@ -30,7 +27,7 @@ func AddPostCommentReply(r *PostCommentReply) error {
 	}
 
 	if _, err := o.Insert(&reply); err != nil {
-		return err
+		return errors.Wrap(err, "insert fail")
 	}
 
 	beego.Info(fmt.Sprintf("Success to add commment reply, id:%d, comment id:%s, ip:%s",
@@ -44,10 +41,10 @@ func FindPostCommentReplyById(id int) (*PostCommentReply, error) {
 	reply := PostCommentReply{Id: id}
 
 	if err := o.Read(&reply); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "read fail")
 	}
 
-	beego.Info("Success to find comment reply, id:" + id)
+	beego.Info("Success to find comment reply, id:%d", id)
 
 	return &reply, nil
 }
@@ -57,15 +54,15 @@ func SetPostCommentReplyDeleteFlag(id int, isDeleted bool) error {
 	reply := PostCommentReply{Id: id}
 
 	if err := o.Read(&reply); err != nil {
-		return err
+		return errors.Wrap(err, "read fail")
 	}
 
 	reply.IsDeleted = isDeleted
 	if _, err := o.Update(&reply); err != nil {
-		return err
+		return errors.Wrap(err, "update fail")
 	}
 
-	beego.Info("Success to set post comment reply delete flag, id:" + id + ", flag:" + isDeleted)
+	beego.Info("Success to set post comment reply delete flag, id:%d, flag:%v", id, isDeleted)
 
 	return nil
 }
@@ -74,9 +71,9 @@ func GetPostCommentRepliesByPostComment(comment *PostComment) ([]*PostCommentRep
 	o := orm.NewOrm()
 	var rs []*PostCommentReply
 
-	num, err := o.QueryTable(new(PostCommentReply)).Filter("PostComment__Id", comment.Id).OrderBy("created_time").All(&ps)
+	num, err := o.QueryTable(new(PostCommentReply)).Filter("PostComment__Id", comment.Id).OrderBy("created_time").All(&rs)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "query by comment fail")
 	}
 
 	beego.Info("Success to get post comment replies by comment, comment id:%s, num:%d",
