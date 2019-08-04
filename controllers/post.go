@@ -14,8 +14,15 @@ type PostController struct {
 	beego.Controller
 }
 
+func (this *PostController) URLMapping() {
+	this.Mapping("CreatePost", this.CreatePost)
+	this.Mapping("GetPostsByBoard", this.GetPostsByBoard)
+	this.Mapping("GetPostById", this.GetPostById)
+	this.Mapping("DeletePost", this.DeletePost)
+}
+
 // @Title Create post
-// @Summary Create post
+// @Summary /board/{board_id}/post Create post
 // @Param   title		body	string	true	"Title of post"
 // @Param   contents	body	string	true	"Contents of post"
 // @Param 	ip			body	string	true	"ip of user"
@@ -24,7 +31,7 @@ type PostController struct {
 // @Failure 400 Bad Request
 // @Failure 404 Not found
 // @Accept json
-// @router /board/:id/post(/*/post) [post]
+// @router /*/post [post]
 func (this *PostController) CreatePost() {
 	post := models.Post{}
 
@@ -74,12 +81,12 @@ func (this *PostController) CreatePost() {
 }
 
 // @Title Get posts by board
-// @Summary Get posts by board
+// @Summary /board/{board_id}/posts Get posts by board
 // @Param board_id 	path	int	true	"board id"
-// @Success 200 {object}array models.Post
+// @Success 200 {array} models.Post
 // @Failure 404 Not found
 // @Accept json
-// @router /board/:id/posts(/*/posts) [get]
+// @router /*/posts [get]
 func (this *PostController) GetPostsByBoard() {
 	splat := this.Ctx.Input.Param(":splat")
 	// splat == "board/:id"
@@ -123,7 +130,7 @@ func (this *PostController) GetPostsByBoard() {
 // @Success 200 {object} models.Post
 // @Failure 404 Not found
 // @Accept json
-// @router /post/:id [get]
+// @router /post/:id:int [get]
 func (this *PostController) GetPostById() {
 	id_param := this.Ctx.Input.Param(":id")
 
@@ -158,7 +165,7 @@ func (this *PostController) GetPostById() {
 // @Success 200
 // @Failure 404 Not found
 // @Accept json
-// @router /post/:id [delete]
+// @router /post/:id:int [delete]
 func (this *PostController) DeletePost() {
 	id_param := this.Ctx.Input.Param(":id")
 

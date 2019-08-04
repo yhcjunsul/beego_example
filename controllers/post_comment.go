@@ -14,8 +14,14 @@ type PostCommentController struct {
 	beego.Controller
 }
 
+func (this *PostCommentController) URLMapping() {
+	this.Mapping("CreatePostComment", this.CreatePostComment)
+	this.Mapping("GetPostCommentsByPost", this.GetPostCommentsByPost)
+	this.Mapping("DeletePostComment", this.DeletePostComment)
+}
+
 // @Title Create post comment
-// @Summary Create post comment
+// @Summary /post/{post_id}/post_comment Create post comment
 // @Param   contents	body	string	true	"Contents of comment"
 // @Param   ip			body	string	true	"IP of user"
 // @Param  	post_id		path	int		true	"post id"
@@ -23,7 +29,7 @@ type PostCommentController struct {
 // @Failure 400 Bad Request
 // @Failure 404 Not found
 // @Accept json
-// @router /post/:id/post_comment(/*/post_comment) [post]
+// @router /*/post_comment [post]
 func (this *PostCommentController) CreatePostComment() {
 	comment := models.PostComment{}
 
@@ -73,13 +79,13 @@ func (this *PostCommentController) CreatePostComment() {
 }
 
 // @Title Get post comments by post
-// @Summary Get post comments by post
+// @Summary /post/{post_id}/post_comments Get post comments by post
 // @Param post_id 	path	int	true	"post id"
-// @Success 200 {object}array models.PostComment
+// @Success 200 {array} models.PostComment
 // @Failure 400 Bad request
 // @Failure 404 Not found
 // @Accept json
-// @router /post/:id/post_comments(/*/post_comments) [get]
+// @router /*/post_comments [get]
 func (this *PostCommentController) GetPostCommentsByPost() {
 	splat := this.Ctx.Input.Param(":splat")
 	// splat == "post/:id"
@@ -122,7 +128,7 @@ func (this *PostCommentController) GetPostCommentsByPost() {
 // @Success 200
 // @Failure 404 Not found
 // @Accept json
-// @router /post_comment/:id [delete]
+// @router /post_comment/:id:int [delete]
 func (this *PostCommentController) DeletePostComment() {
 	id_param := this.Ctx.Input.Param(":id")
 

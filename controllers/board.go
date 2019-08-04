@@ -14,8 +14,15 @@ type BoardController struct {
 	beego.Controller
 }
 
+func (this *BoardController) URLMapping() {
+	this.Mapping("CreateBoard", this.CreateBoard)
+	this.Mapping("GetBoardsByCategory", this.GetBoardsByCategory)
+	this.Mapping("GetAllBoards", this.GetAllBoards)
+	this.Mapping("DeleteBoard", this.DeleteBoard)
+}
+
 // @Title Create board
-// @Summary Create board
+// @Summary /board_category/{board_category_id}/board Create board
 // @Description Create board using name and category id
 // @Param   name				body	string	true	"Name of board category"
 // @Param	board_category_id 	path	int		true	"category id"
@@ -23,7 +30,7 @@ type BoardController struct {
 // @Failure 400 Bad Request
 // @Failure 404 Not found
 // @Accept json
-// @router /board_category/:id/board(/*/board) [post]
+// @router /*/board [post]
 func (this *BoardController) CreateBoard() {
 	board := models.Board{}
 
@@ -73,12 +80,12 @@ func (this *BoardController) CreateBoard() {
 }
 
 // @Title Get boards by category
-// @Summary Get boards by category
+// @Summary /board_category/{board_category_id}/boards Get boards by category
 // @Param board_category_id		path	int		true	"category id"
-// @Success 200 {object}array models.Board
+// @Success 200 {array} models.Board
 // @Failure 404 Not found
 // @Accept json
-// @router /board_category/:id/boards(/*/boards) [get]
+// @router /*/boards [get]
 func (this *BoardController) GetBoardsByCategory() {
 	splat := this.Ctx.Input.Param(":splat")
 	// splat == "board_category/:id"
@@ -142,7 +149,7 @@ func (this *BoardController) GetAllBoards() {
 // @Success 200
 // @Failure 404 Not found
 // @Accept json
-// @router /board/:id [delete]
+// @router /board/:id:int [delete]
 func (this *BoardController) DeleteBoard() {
 	id_param := this.Ctx.Input.Param(":id")
 

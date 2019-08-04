@@ -13,6 +13,12 @@ type BoardCategoryController struct {
 	beego.Controller
 }
 
+func (this *BoardCategoryController) URLMapping() {
+	this.Mapping("CreateBoardCategory", this.CreateBoardCategory)
+	this.Mapping("GetAllBoardCategories", this.GetAllBoardCategories)
+	this.Mapping("DeleteBoardCategory", this.DeleteBoardCategory)
+}
+
 // @Title Create board category
 // @Summary Create board category
 // @Description Create board category using name
@@ -42,7 +48,7 @@ func (this *BoardCategoryController) CreateBoardCategory() {
 
 // @Title Get all board category
 // @Summary Get all board category
-// @Success 200 {object}array models.BoardCategory
+// @Success 200 {array} models.BoardCategory
 // @Failure 404 Not found
 // @Accept json
 // @router /board_categories [get]
@@ -66,7 +72,7 @@ func (this *BoardCategoryController) GetAllBoardCategories() {
 // @Success 200
 // @Failure 404 Not found
 // @Accept json
-// @router /board_category/:id [delete]
+// @router /board_category/:id:int [delete]
 func (this *BoardCategoryController) DeleteBoardCategory() {
 	id_param := this.Ctx.Input.Param(":id")
 

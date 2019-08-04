@@ -14,8 +14,14 @@ type PostCommentReplyController struct {
 	beego.Controller
 }
 
+func (this *PostCommentReplyController) URLMapping() {
+	this.Mapping("CreatePostCommentReply", this.CreatePostCommentReply)
+	this.Mapping("GetPostCommentRepliesByPostComment", this.GetPostCommentRepliesByPostComment)
+	this.Mapping("DeletePostCommentReply", this.DeletePostCommentReply)
+}
+
 // @Title Create post comment reply
-// @Summary Create post comment reply
+// @Summary /post_comment/{post_comment_id}/post_comment_reply Create post comment reply
 // @Param   contents	body	string	true	"Contents of comment reply"
 // @Param   ip			body	string	true	"IP of user"
 // @Param  	comment_id	path	int		true	"comment id"
@@ -23,7 +29,7 @@ type PostCommentReplyController struct {
 // @Failure 400 Bad Request
 // @Failure 404 Not found
 // @Accept json
-// @router /post_comment/:id/post_comment_reply(/*/post_comment_reply) [post]
+// @router /*/post_comment_reply [post]
 func (this *PostCommentReplyController) CreatePostCommentReply() {
 	reply := models.PostCommentReply{}
 
@@ -73,13 +79,13 @@ func (this *PostCommentReplyController) CreatePostCommentReply() {
 }
 
 // @Title Get post comment replies by comment
-// @Summary Get post comment replies by comment
+// @Summary /post_comment/{post_comment_id}/post_comment_replies Get post comment replies by comment
 // @Param comment_id 	path	int	true	"comment id"
-// @Success 200 {object}array models.PostCommentReply
+// @Success 200 {array} models.PostCommentReply
 // @Failure 400 Bad request
 // @Failure 404 Not found
 // @Accept json
-// @router /post_comment/:id/post_comment_replies(/*/post_comment_replies) [get]
+// @router /*/post_comment_replies [get]
 func (this *PostCommentReplyController) GetPostCommentRepliesByPostComment() {
 	splat := this.Ctx.Input.Param(":splat")
 	// splat == "post_comment/:id"
@@ -122,7 +128,7 @@ func (this *PostCommentReplyController) GetPostCommentRepliesByPostComment() {
 // @Success 200
 // @Failure 404 Not found
 // @Accept json
-// @router /post_comment_reply/:id [delete]
+// @router /post_comment_reply/:id:int [delete]
 func (this *PostCommentReplyController) DeletePostCommentReply() {
 	id_param := this.Ctx.Input.Param(":id")
 
