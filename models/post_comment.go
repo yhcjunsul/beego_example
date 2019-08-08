@@ -16,7 +16,8 @@ type PostComment struct {
 	IsDeleted   bool                `json:"is_deleted" orm:"default(false)"`
 	CreatedTime time.Time           `json:"created_time" orm:"auto_now_add"`
 	Post        *Post               `json:"post" orm:"rel(fk)"`
-	Replies     []*PostCommentReply `orm:"reverse(many)"`
+	Replies     []*PostCommentReply `json:"post_comment_replies" orm:"reverse(many)"`
+	Reports     []*Report           `json:"reports" orm:"reverse(many)"`
 }
 
 func AddPostComment(c *PostComment) error {

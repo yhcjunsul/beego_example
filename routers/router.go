@@ -21,6 +21,7 @@ func init() {
 				&controllers.PostController{},
 				&controllers.PostCommentController{},
 				&controllers.PostCommentReplyController{},
+				&controllers.ReportController{},
 			),
 		)
 

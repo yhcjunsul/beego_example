@@ -18,7 +18,8 @@ type Post struct {
 	IsDeleted   bool           `json:"is_deleted" orm:"default(false)"`
 	CreatedTime time.Time      `json:"created_time" orm:"auto_now_add"`
 	Board       *Board         `json:"board" orm:"rel(fk)"`
-	Comments    []*PostComment `orm:"reverse(many)"`
+	Comments    []*PostComment `json:"post_comments" orm:"reverse(many)"`
+	Reports     []*Report      `json:"reports" orm:"reverse(many)"`
 }
 
 func AddPost(p *Post) error {
