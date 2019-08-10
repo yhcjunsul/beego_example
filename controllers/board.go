@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"strconv"
-	"strings"
 
 	"github.com/yhcjunsul/beego_example/models"
 	"github.com/yhcjunsul/beego_example/utils"
@@ -22,7 +21,7 @@ func (this *BoardController) URLMapping() {
 }
 
 // @Title Create board
-// @Summary /board_category/{board_category_id}/board Create board
+// @Summary Create board
 // @Description Create board using name and category id
 // @Param   name				body	string	true	"Name of board category"
 // @Param	board_category_id 	path	int		true	"category id"
@@ -30,27 +29,11 @@ func (this *BoardController) URLMapping() {
 // @Failure 400 Bad Request
 // @Failure 404 Not found
 // @Accept json
-// @router /*/board [post]
+// @router /board_category/:categoryId:int/board [post]
 func (this *BoardController) CreateBoard() {
 	board := models.Board{}
 
-	splat := this.Ctx.Input.Param(":splat")
-	// splat == "board_category/:id"
-	splat_splits := strings.Split(splat, "/")
-
-	if len(splat_splits) != 2 {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	if splat_splits[0] != "board_category" {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	category_id, err := strconv.Atoi(splat_splits[1])
+	category_id, err := strconv.Atoi(this.Ctx.Input.Param(":categoryId"))
 	if err != nil {
 		this.Ctx.Output.SetStatus(400)
 		this.Ctx.Output.Body([]byte("Bad Request"))
@@ -80,30 +63,14 @@ func (this *BoardController) CreateBoard() {
 }
 
 // @Title Get boards by category
-// @Summary /board_category/{board_category_id}/boards Get boards by category
+// @Summary Get boards by category
 // @Param board_category_id		path	int		true	"category id"
 // @Success 200 {array} models.Board
 // @Failure 404 Not found
 // @Accept json
-// @router /*/boards [get]
+// @router /board_category/:categoryId:int/boards [get]
 func (this *BoardController) GetBoardsByCategory() {
-	splat := this.Ctx.Input.Param(":splat")
-	// splat == "board_category/:id"
-	splat_splits := strings.Split(splat, "/")
-
-	if len(splat_splits) != 2 {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	if splat_splits[0] != "board_category" {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	category_id, err := strconv.Atoi(splat_splits[1])
+	category_id, err := strconv.Atoi(this.Ctx.Input.Param(":categoryId"))
 	if err != nil {
 		this.Ctx.Output.SetStatus(400)
 		this.Ctx.Output.Body([]byte("Bad Request"))

@@ -12,10 +12,12 @@ func InitTestSetting() {
 	category := BoardCategory{Name: "category"}
 	AddCategory(&category)
 
+	foundCategory, _ := FindCategoryById(1)
+
 	numberSlice := []string{"first_", "second_", "third_"}
 
 	for i, numStr := range numberSlice {
-		board := Board{Name: numStr + "board", BoardCategory: &category}
+		board := Board{Name: numStr + "board", BoardCategory: foundCategory}
 		AddBoard(&board)
 
 		id_index := i + 1

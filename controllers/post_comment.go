@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"strconv"
-	"strings"
 
 	"github.com/yhcjunsul/beego_example/models"
 	"github.com/yhcjunsul/beego_example/utils"
@@ -21,34 +20,18 @@ func (this *PostCommentController) URLMapping() {
 }
 
 // @Title Create post comment
-// @Summary /post/{post_id}/post_comment Create post comment
+// @Summary Create post comment
 // @Param   contents	body	string	true	"Contents of comment"
 // @Param  	post_id		path	int		true	"post id"
 // @Success 200
 // @Failure 400 Bad Request
 // @Failure 404 Not found
 // @Accept json
-// @router /*/post_comment [post]
+// @router /post/:postId:int/post_comment [post]
 func (this *PostCommentController) CreatePostComment() {
 	comment := models.PostComment{}
 
-	splat := this.Ctx.Input.Param(":splat")
-	// splat == "post/:id"
-	splat_splits := strings.Split(splat, "/")
-
-	if len(splat_splits) != 2 {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	if splat_splits[0] != "post" {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	post_id, err := strconv.Atoi(splat_splits[1])
+	post_id, err := strconv.Atoi(this.Ctx.Input.Param(":postId"))
 	if err != nil {
 		this.Ctx.Output.SetStatus(400)
 		this.Ctx.Output.Body([]byte("Bad Request"))
@@ -81,31 +64,15 @@ func (this *PostCommentController) CreatePostComment() {
 }
 
 // @Title Get post comments by post
-// @Summary /post/{post_id}/post_comments Get post comments by post
+// @Summary Get post comments by post
 // @Param post_id 	path	int	true	"post id"
 // @Success 200 {array} models.PostComment
 // @Failure 400 Bad request
 // @Failure 404 Not found
 // @Accept json
-// @router /*/post_comments [get]
+// @router /post/:postId:int/post_comments [get]
 func (this *PostCommentController) GetPostCommentsByPost() {
-	splat := this.Ctx.Input.Param(":splat")
-	// splat == "post/:id"
-	splat_splits := strings.Split(splat, "/")
-
-	if len(splat_splits) != 2 {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	if splat_splits[0] != "post" {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	post_id, err := strconv.Atoi(splat_splits[1])
+	post_id, err := strconv.Atoi(this.Ctx.Input.Param(":postId"))
 	if err != nil {
 		this.Ctx.Output.SetStatus(400)
 		this.Ctx.Output.Body([]byte("Bad Request"))

@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"strconv"
-	"strings"
 
 	"github.com/yhcjunsul/beego_example/models"
 	"github.com/yhcjunsul/beego_example/utils"
@@ -22,7 +21,7 @@ func (this *PostController) URLMapping() {
 }
 
 // @Title Create post
-// @Summary /board/{board_id}/post Create post
+// @Summary Create post
 // @Param   title		body	string	true	"Title of post"
 // @Param   contents	body	string	true	"Contents of post"
 // @Param  	board_id	path	int		true	"board id"
@@ -30,27 +29,11 @@ func (this *PostController) URLMapping() {
 // @Failure 400 Bad Request
 // @Failure 404 Not found
 // @Accept json
-// @router /*/post [post]
+// @router /board/:boardId:int/post [post]
 func (this *PostController) CreatePost() {
 	post := models.Post{}
 
-	splat := this.Ctx.Input.Param(":splat")
-	// splat == "board/:id"
-	splat_splits := strings.Split(splat, "/")
-
-	if len(splat_splits) != 2 {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	if splat_splits[0] != "board" {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	board_id, err := strconv.Atoi(splat_splits[1])
+	board_id, err := strconv.Atoi(this.Ctx.Input.Param(":boardId"))
 	if err != nil {
 		this.Ctx.Output.SetStatus(400)
 		this.Ctx.Output.Body([]byte("Bad Request"))
@@ -83,30 +66,14 @@ func (this *PostController) CreatePost() {
 }
 
 // @Title Get posts by board
-// @Summary /board/{board_id}/posts Get posts by board
+// @Summary Get posts by board
 // @Param board_id 	path	int	true	"board id"
 // @Success 200 {array} models.Post
 // @Failure 404 Not found
 // @Accept json
-// @router /*/posts [get]
+// @router /board/:boardId:int/posts [get]
 func (this *PostController) GetPostsByBoard() {
-	splat := this.Ctx.Input.Param(":splat")
-	// splat == "board/:id"
-	splat_splits := strings.Split(splat, "/")
-
-	if len(splat_splits) != 2 {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	if splat_splits[0] != "board" {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	board_id, err := strconv.Atoi(splat_splits[1])
+	board_id, err := strconv.Atoi(this.Ctx.Input.Param(":boardId"))
 	if err != nil {
 		this.Ctx.Output.SetStatus(400)
 		this.Ctx.Output.Body([]byte("Bad Request"))

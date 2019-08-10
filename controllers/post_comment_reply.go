@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"strconv"
-	"strings"
 
 	"github.com/yhcjunsul/beego_example/models"
 	"github.com/yhcjunsul/beego_example/utils"
@@ -21,34 +20,18 @@ func (this *PostCommentReplyController) URLMapping() {
 }
 
 // @Title Create post comment reply
-// @Summary /post_comment/{post_comment_id}/post_comment_reply Create post comment reply
+// @Summary Create post comment reply
 // @Param   contents	body	string	true	"Contents of comment reply"
 // @Param  	comment_id	path	int		true	"comment id"
 // @Success 200
 // @Failure 400 Bad Request
 // @Failure 404 Not found
 // @Accept json
-// @router /*/post_comment_reply [post]
+// @router /post_comment/:commentId:int/post_comment_reply [post]
 func (this *PostCommentReplyController) CreatePostCommentReply() {
 	reply := models.PostCommentReply{}
 
-	splat := this.Ctx.Input.Param(":splat")
-	// splat == "post_comment/:id"
-	splat_splits := strings.Split(splat, "/")
-
-	if len(splat_splits) != 2 {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	if splat_splits[0] != "post_comment" {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	comment_id, err := strconv.Atoi(splat_splits[1])
+	comment_id, err := strconv.Atoi(this.Ctx.Input.Param(":commentId"))
 	if err != nil {
 		this.Ctx.Output.SetStatus(400)
 		this.Ctx.Output.Body([]byte("Bad Request"))
@@ -81,31 +64,15 @@ func (this *PostCommentReplyController) CreatePostCommentReply() {
 }
 
 // @Title Get post comment replies by comment
-// @Summary /post_comment/{post_comment_id}/post_comment_replies Get post comment replies by comment
+// @Summary Get post comment replies by comment
 // @Param comment_id 	path	int	true	"comment id"
 // @Success 200 {array} models.PostCommentReply
 // @Failure 400 Bad request
 // @Failure 404 Not found
 // @Accept json
-// @router /*/post_comment_replies [get]
+// @router /post_comment/:commentId:int/post_comment_replies [get]
 func (this *PostCommentReplyController) GetPostCommentRepliesByPostComment() {
-	splat := this.Ctx.Input.Param(":splat")
-	// splat == "post_comment/:id"
-	splat_splits := strings.Split(splat, "/")
-
-	if len(splat_splits) != 2 {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	if splat_splits[0] != "post_comment" {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
-		return
-	}
-
-	comment_id, err := strconv.Atoi(splat_splits[1])
+	comment_id, err := strconv.Atoi(this.Ctx.Input.Param(":commentId"))
 	if err != nil {
 		this.Ctx.Output.SetStatus(400)
 		this.Ctx.Output.Body([]byte("Bad Request"))
