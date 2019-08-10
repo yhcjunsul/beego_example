@@ -12,3 +12,10 @@
 *.out
 
 node_modules
+
+static/*
+swagger/*
+swagger.zip
+views/*
+
+*.tmp
