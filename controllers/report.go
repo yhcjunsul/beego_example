@@ -16,21 +16,18 @@ type ReportController struct {
 type PostReportCreateParam struct {
 	Detail         string `json:"detail"`
 	ReportReasonId int    `json:"report_reason_id"`
-	Ip             string `json:"ip"`
 	PostId         int    `json:"post_id"`
 }
 
 type PostCommentReportCreateParam struct {
 	Detail         string `json:"detail"`
 	ReportReasonId int    `json:"report_reason_id"`
-	Ip             string `json:"ip"`
 	PostCommentId  int    `json:"post_comment_id"`
 }
 
 type PostCommentReplyReportCreateParam struct {
 	Detail             string `json:"detail"`
 	ReportReasonId     int    `json:"report_reason_id"`
-	Ip                 string `json:"ip"`
 	PostCommentReplyId int    `json:"post_comment_reply_id"`
 }
 
@@ -47,7 +44,6 @@ func (this *ReportController) URLMapping() {
 // @Summary Create post report
 // @Param   detail                  body    string  false   "detail description of report"
 // @Param   report_reason_id	    body	int    	true	"id of report reason"
-// @Param   ip                      body    string  true    "ip"
 // @Param   post_id                 body    int     true    "post id"
 // @Success 200
 // @Failure 400 Bad Request
@@ -64,7 +60,9 @@ func (this *ReportController) CreatePostReport() {
 	}
 
 	report.Detail = param.Detail
-	report.Ip = param.Ip
+
+	ip := this.Ctx.Input.IP()
+	report.Ip = ip
 
 	reason, err := models.FindReportReasonById(param.ReportReasonId)
 	if err != nil {
@@ -97,7 +95,6 @@ func (this *ReportController) CreatePostReport() {
 // @Summary Create post comment report
 // @Param   detail                  body    string  false   "detail description of report"
 // @Param   report_reason_id	    body	int    	true	"id of report reason"
-// @Param   ip                      body    string  true    "ip"
 // @Param   post_comment_id         body    int     true    "post comment id"
 // @Success 200
 // @Failure 400 Bad Request
@@ -114,7 +111,9 @@ func (this *ReportController) CreatePostCommentReport() {
 	}
 
 	report.Detail = param.Detail
-	report.Ip = param.Ip
+
+	ip := this.Ctx.Input.IP()
+	report.Ip = ip
 
 	reason, err := models.FindReportReasonById(param.ReportReasonId)
 	if err != nil {
@@ -147,7 +146,6 @@ func (this *ReportController) CreatePostCommentReport() {
 // @Summary Create post comment reply report
 // @Param   detail                  body    string  false   "detail description of report"
 // @Param   report_reason_id	    body	int    	true	"id of report reason"
-// @Param   ip                      body    string  true    "ip"
 // @Param   post_comment_reply_id         body    int     true    "post comment reply id"
 // @Success 200
 // @Failure 400 Bad Request
@@ -164,7 +162,9 @@ func (this *ReportController) CreatePostCommentReplyReport() {
 	}
 
 	report.Detail = param.Detail
-	report.Ip = param.Ip
+
+	ip := this.Ctx.Input.IP()
+	report.Ip = ip
 
 	reason, err := models.FindReportReasonById(param.ReportReasonId)
 	if err != nil {

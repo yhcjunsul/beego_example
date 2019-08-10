@@ -25,7 +25,6 @@ func (this *PostController) URLMapping() {
 // @Summary /board/{board_id}/post Create post
 // @Param   title		body	string	true	"Title of post"
 // @Param   contents	body	string	true	"Contents of post"
-// @Param 	ip			body	string	true	"ip of user"
 // @Param  	board_id	path	int		true	"board id"
 // @Success 200
 // @Failure 400 Bad Request
@@ -70,6 +69,9 @@ func (this *PostController) CreatePost() {
 		this.Ctx.Output.Body([]byte("Not found"))
 		return
 	}
+
+	ip := this.Ctx.Input.IP()
+	post.Ip = ip
 
 	if err = models.AddPost(&post); err != nil {
 		this.Ctx.Output.SetStatus(400)

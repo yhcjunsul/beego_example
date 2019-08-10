@@ -23,7 +23,6 @@ func (this *PostCommentController) URLMapping() {
 // @Title Create post comment
 // @Summary /post/{post_id}/post_comment Create post comment
 // @Param   contents	body	string	true	"Contents of comment"
-// @Param   ip			body	string	true	"IP of user"
 // @Param  	post_id		path	int		true	"post id"
 // @Success 200
 // @Failure 400 Bad Request
@@ -68,6 +67,9 @@ func (this *PostCommentController) CreatePostComment() {
 		this.Ctx.Output.Body([]byte("Not found"))
 		return
 	}
+
+	ip := this.Ctx.Input.IP()
+	comment.Ip = ip
 
 	if err = models.AddPostComment(&comment); err != nil {
 		this.Ctx.Output.SetStatus(400)

@@ -23,7 +23,6 @@ func (this *PostCommentReplyController) URLMapping() {
 // @Title Create post comment reply
 // @Summary /post_comment/{post_comment_id}/post_comment_reply Create post comment reply
 // @Param   contents	body	string	true	"Contents of comment reply"
-// @Param   ip			body	string	true	"IP of user"
 // @Param  	comment_id	path	int		true	"comment id"
 // @Success 200
 // @Failure 400 Bad Request
@@ -68,6 +67,9 @@ func (this *PostCommentReplyController) CreatePostCommentReply() {
 		this.Ctx.Output.Body([]byte("Not found"))
 		return
 	}
+
+	ip := this.Ctx.Input.IP()
+	reply.Ip = ip
 
 	if err = models.AddPostCommentReply(&reply); err != nil {
 		this.Ctx.Output.SetStatus(400)
