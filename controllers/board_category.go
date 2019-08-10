@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"encoding/json"
 	"strconv"
 
 	"github.com/yhcjunsul/beego_example/models"
+	"github.com/yhcjunsul/beego_example/utils"
 
 	"github.com/astaxie/beego"
 )
@@ -31,7 +31,7 @@ func (this *BoardCategoryController) URLMapping() {
 func (this *BoardCategoryController) CreateBoardCategory() {
 	category := models.BoardCategory{}
 
-	if err := json.Unmarshal(this.Ctx.Input.RequestBody, &category); err != nil {
+	if err := utils.UnmarshalRequestJson(this.Ctx.Input.RequestBody, &category); err != nil {
 		this.Ctx.Output.SetStatus(400)
 		this.Ctx.Output.Body([]byte("Bad Request"))
 		return
