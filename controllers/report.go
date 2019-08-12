@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/yhcjunsul/beego_example/models"
@@ -46,7 +47,8 @@ func (this *ReportController) URLMapping() {
 // @Param   report_reason_id	    body	int    	true	"id of report reason"
 // @Param   post_id                 body    int     true    "post id"
 // @Success 200
-// @Failure 400 Bad Request
+// @Failure 400 Bad Request, invalid body contents
+// @Failure 500 Internal server error
 // @Accept json
 // @router /report/post [post]
 func (this *ReportController) CreatePostReport() {
@@ -54,8 +56,7 @@ func (this *ReportController) CreatePostReport() {
 	report := models.Report{}
 
 	if err := utils.UnmarshalRequestJson(this.Ctx.Input.RequestBody, &param); err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid body contents")
 		return
 	}
 
@@ -66,8 +67,7 @@ func (this *ReportController) CreatePostReport() {
 
 	reason, err := models.FindReportReasonById(param.ReportReasonId)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -75,16 +75,14 @@ func (this *ReportController) CreatePostReport() {
 
 	post, err := models.FindPostById(param.PostId)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
 	report.Post = post
 
 	if err = models.AddReport(&report); err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte(err.Error()))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -97,7 +95,8 @@ func (this *ReportController) CreatePostReport() {
 // @Param   report_reason_id	    body	int    	true	"id of report reason"
 // @Param   post_comment_id         body    int     true    "post comment id"
 // @Success 200
-// @Failure 400 Bad Request
+// @Failure 400 Bad request, invalid body contents
+// @Failure 500 Internal server error
 // @Accept json
 // @router /report/post_comment [post]
 func (this *ReportController) CreatePostCommentReport() {
@@ -105,8 +104,7 @@ func (this *ReportController) CreatePostCommentReport() {
 	report := models.Report{}
 
 	if err := utils.UnmarshalRequestJson(this.Ctx.Input.RequestBody, &param); err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid body contents")
 		return
 	}
 
@@ -117,8 +115,7 @@ func (this *ReportController) CreatePostCommentReport() {
 
 	reason, err := models.FindReportReasonById(param.ReportReasonId)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -126,16 +123,14 @@ func (this *ReportController) CreatePostCommentReport() {
 
 	comment, err := models.FindPostCommentById(param.PostCommentId)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
 	report.PostComment = comment
 
 	if err = models.AddReport(&report); err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte(err.Error()))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -148,7 +143,8 @@ func (this *ReportController) CreatePostCommentReport() {
 // @Param   report_reason_id	    body	int    	true	"id of report reason"
 // @Param   post_comment_reply_id         body    int     true    "post comment reply id"
 // @Success 200
-// @Failure 400 Bad Request
+// @Failure 400 Bad request, invalid body contents
+// @Failure 500 Internal server error
 // @Accept json
 // @router /report/post_comment [post]
 func (this *ReportController) CreatePostCommentReplyReport() {
@@ -156,8 +152,7 @@ func (this *ReportController) CreatePostCommentReplyReport() {
 	report := models.Report{}
 
 	if err := utils.UnmarshalRequestJson(this.Ctx.Input.RequestBody, &param); err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid body contents")
 		return
 	}
 
@@ -168,8 +163,7 @@ func (this *ReportController) CreatePostCommentReplyReport() {
 
 	reason, err := models.FindReportReasonById(param.ReportReasonId)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -177,16 +171,14 @@ func (this *ReportController) CreatePostCommentReplyReport() {
 
 	reply, err := models.FindPostCommentReplyById(param.PostCommentReplyId)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
 	report.PostCommentReply = reply
 
 	if err = models.AddReport(&report); err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte(err.Error()))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -198,8 +190,8 @@ func (this *ReportController) CreatePostCommentReplyReport() {
 // @Summary Get reports by post
 // @Param id		path	int		true	"post id"
 // @Success 200 {array} models.Report
-// @Failure 400 Bad Request
-// @Failure 404 Not found
+// @Failure 400 Bad request, invalid post id
+// @Failure 500 Internal server error
 // @Accept json
 // @router /reports/post/:id:int [get]
 func (this *ReportController) GetReportsByPost() {
@@ -207,21 +199,19 @@ func (this *ReportController) GetReportsByPost() {
 
 	post_id, err := strconv.Atoi(post_id_param)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid post id")
+		return
 	}
 
 	post, err := models.FindPostById(post_id)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
 	reports, err := models.GetReportsByPost(post)
 	if err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("Not Found"))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -234,8 +224,8 @@ func (this *ReportController) GetReportsByPost() {
 // @Summary Get reports by post comment
 // @Param id		path	int		true	"post comment id"
 // @Success 200 {array} models.Report
-// @Failure 400 Bad Request
-// @Failure 404 Not found
+// @Failure 400 Bad Request, invalid comment id
+// @Failure 500 Internal server error
 // @Accept json
 // @router /reports/post_comment/:id:int [get]
 func (this *ReportController) GetReportsByPostComment() {
@@ -243,21 +233,19 @@ func (this *ReportController) GetReportsByPostComment() {
 
 	comment_id, err := strconv.Atoi(comment_id_param)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid comment id")
+		return
 	}
 
 	comment, err := models.FindPostCommentById(comment_id)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
 	reports, err := models.GetReportsByPostComment(comment)
 	if err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("Not Found"))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -270,8 +258,8 @@ func (this *ReportController) GetReportsByPostComment() {
 // @Summary Get reports by post comment reply
 // @Param id		path	int		true	"post comment reply id"
 // @Success 200 {array} models.Report
-// @Failure 400 Bad Request
-// @Failure 404 Not found
+// @Failure 400 Bad request, invalid reply id
+// @Failure 500 Internal server error
 // @Accept json
 // @router /reports/post_comment_reply/:id:int [get]
 func (this *ReportController) GetReportsByPostCommentReply() {
@@ -279,21 +267,19 @@ func (this *ReportController) GetReportsByPostCommentReply() {
 
 	reply_id, err := strconv.Atoi(reply_id_param)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid reply id")
+		return
 	}
 
 	reply, err := models.FindPostCommentReplyById(reply_id)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
 	reports, err := models.GetReportsByPostCommentReply(reply)
 	if err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("Not Found"))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 

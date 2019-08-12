@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/yhcjunsul/beego_example/models"
@@ -24,22 +25,20 @@ func (this *BoardCategoryController) URLMapping() {
 // @Description Create board category using name
 // @Param   name	body	string	true	"Name of board category"
 // @Success 200
-// @Failure 400 Bad Request, Duplicate name
-// @Failure 422 Unprocessable Entity
+// @Failure 400 Bad request, invalid body contents
+// @Failure 500 Internal server error
 // @Accept json
 // @router /board_category [post]
 func (this *BoardCategoryController) CreateBoardCategory() {
 	category := models.BoardCategory{}
 
 	if err := utils.UnmarshalRequestJson(this.Ctx.Input.RequestBody, &category); err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid body contents")
 		return
 	}
 
 	if err := models.AddCategory(&category); err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte(err.Error()))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -49,15 +48,14 @@ func (this *BoardCategoryController) CreateBoardCategory() {
 // @Title Get all board category
 // @Summary Get all board category
 // @Success 200 {array} models.BoardCategory
-// @Failure 404 Not found
+// @Failure 500 Internal server error
 // @Accept json
 // @router /board_categories [get]
 func (this *BoardCategoryController) GetAllBoardCategories() {
 	categories, err := models.GetAllCategories()
 
 	if err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("get all categories error:" + err.Error()))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -70,7 +68,8 @@ func (this *BoardCategoryController) GetAllBoardCategories() {
 // @Title Delete board category
 // @Summary Delete board category by ID
 // @Success 200
-// @Failure 404 Not found
+// @Failure 400 Bad request, invalid category id
+// @Failure 500 Internal server error
 // @Accept json
 // @router /board_category/:id:int [delete]
 func (this *BoardCategoryController) DeleteBoardCategory() {
@@ -78,14 +77,12 @@ func (this *BoardCategoryController) DeleteBoardCategory() {
 
 	id, err := strconv.Atoi(id_param)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid category id")
 		return
 	}
 
 	if err := models.DeleteCategoy(id); err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("Delete categories error:" + err.Error()))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 }

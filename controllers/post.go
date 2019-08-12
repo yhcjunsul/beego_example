@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/yhcjunsul/beego_example/models"
@@ -26,8 +27,10 @@ func (this *PostController) URLMapping() {
 // @Param   contents	body	string	true	"Contents of post"
 // @Param  	board_id	path	int		true	"board id"
 // @Success 200
-// @Failure 400 Bad Request
-// @Failure 404 Not found
+// @Failure 400 Bad request, invalid board id
+// @Failure 400 Bad request, invalid body contents
+// @Failure 404 Not found board
+// @Failure 500 Internal server error
 // @Accept json
 // @router /board/:boardId:int/post [post]
 func (this *PostController) CreatePost() {
@@ -35,21 +38,18 @@ func (this *PostController) CreatePost() {
 
 	board_id, err := strconv.Atoi(this.Ctx.Input.Param(":boardId"))
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid board id")
 		return
 	}
 
 	if err := utils.UnmarshalRequestJson(this.Ctx.Input.RequestBody, &post); err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid body contents")
 		return
 	}
 
 	post.Board, err = models.FindBoardById(board_id)
 	if err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("Not found"))
+		utils.SetErrorStatus(this.Ctx, http.StatusNotFound, "Not found board")
 		return
 	}
 
@@ -57,8 +57,7 @@ func (this *PostController) CreatePost() {
 	post.Ip = ip
 
 	if err = models.AddPost(&post); err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte(err.Error()))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -69,22 +68,21 @@ func (this *PostController) CreatePost() {
 // @Summary Get posts by board
 // @Param board_id 	path	int	true	"board id"
 // @Success 200 {array} models.Post
-// @Failure 404 Not found
+// @Failure 400 Bad request, invalid board id
+// @Failure 404 Not found board
 // @Accept json
 // @router /board/:boardId:int/posts [get]
 func (this *PostController) GetPostsByBoard() {
 	board_id, err := strconv.Atoi(this.Ctx.Input.Param(":boardId"))
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid board id")
 		return
 	}
 
 	board := models.Board{Id: board_id}
 	posts, err := models.GetPostsByBoard(&board)
 	if err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("Not found board"))
+		utils.SetErrorStatus(this.Ctx, http.StatusNotFound, "Not found board")
 		return
 	}
 
@@ -97,7 +95,9 @@ func (this *PostController) GetPostsByBoard() {
 // @Summary Get post by id
 // @Param id	path	int		true	"id of post"
 // @Success 200 {object} models.Post
-// @Failure 404 Not found
+// @Failure 400 Bad request, invalid post id
+// @Failure 404 Not found post
+// @Failure 500 Internal server error
 // @Accept json
 // @router /post/:id:int [get]
 func (this *PostController) GetPostById() {
@@ -105,21 +105,19 @@ func (this *PostController) GetPostById() {
 
 	id, err := strconv.Atoi(id_param)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid post id")
+		return
 	}
 
 	post, err := models.FindPostById(id)
 	if err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("get post error:" + err.Error()))
+		utils.SetErrorStatus(this.Ctx, http.StatusNotFound, "Not found post")
 		return
 	}
 
 	err = models.IncreasePostViewCount(id)
 	if err != nil {
-		this.Ctx.Output.SetStatus(500)
-		this.Ctx.Output.Body([]byte("get post error:" + err.Error()))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -132,7 +130,8 @@ func (this *PostController) GetPostById() {
 // @Title Delete post
 // @Summary Delete post by ID
 // @Success 200
-// @Failure 404 Not found
+// @Failure 400 Bad request, invalid post id
+// @Failure 500 Internal server error
 // @Accept json
 // @router /post/:id:int [delete]
 func (this *PostController) DeletePost() {
@@ -140,13 +139,12 @@ func (this *PostController) DeletePost() {
 
 	id, err := strconv.Atoi(id_param)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid post id")
+		return
 	}
 
 	if err := models.SetPostDeleteFlag(id, true); err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("Delete post error:" + err.Error()))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 }

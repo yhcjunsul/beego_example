@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/yhcjunsul/beego_example/models"
@@ -26,8 +27,10 @@ func (this *BoardController) URLMapping() {
 // @Param   name				body	string	true	"Name of board category"
 // @Param	board_category_id 	path	int		true	"category id"
 // @Success 200
-// @Failure 400 Bad Request
-// @Failure 404 Not found
+// @Failure 400 Bad Request, invalid category id
+// @Failure 400 Bad request, invalid body contents
+// @Failure 404 Not found category
+// @Failure 500 internal server error
 // @Accept json
 // @router /board_category/:categoryId:int/board [post]
 func (this *BoardController) CreateBoard() {
@@ -35,27 +38,23 @@ func (this *BoardController) CreateBoard() {
 
 	category_id, err := strconv.Atoi(this.Ctx.Input.Param(":categoryId"))
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad Request, invalid category id")
 		return
 	}
 
 	if err := utils.UnmarshalRequestJson(this.Ctx.Input.RequestBody, &board); err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad Request, invalid body contents")
 		return
 	}
 
 	board.BoardCategory, err = models.FindCategoryById(category_id)
 	if err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("Not found"))
+		utils.SetErrorStatus(this.Ctx, http.StatusNotFound, "Not found category")
 		return
 	}
 
 	if err = models.AddBoard(&board); err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte(err.Error()))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -66,22 +65,21 @@ func (this *BoardController) CreateBoard() {
 // @Summary Get boards by category
 // @Param board_category_id		path	int		true	"category id"
 // @Success 200 {array} models.Board
-// @Failure 404 Not found
+// @Failure 400 Bad request, invalid category id
+// @Failure 404 Not found category
 // @Accept json
 // @router /board_category/:categoryId:int/boards [get]
 func (this *BoardController) GetBoardsByCategory() {
 	category_id, err := strconv.Atoi(this.Ctx.Input.Param(":categoryId"))
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid category id")
 		return
 	}
 
 	category := models.BoardCategory{Id: category_id}
 	boards, err := models.GetBoardsByCategory(&category)
 	if err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("Not found category"))
+		utils.SetErrorStatus(this.Ctx, http.StatusNotFound, "Not found category")
 		return
 	}
 
@@ -93,15 +91,14 @@ func (this *BoardController) GetBoardsByCategory() {
 // @Title Get all boards
 // @Summary Get all boards
 // @Success 200 {object}array models.Board
-// @Failure 404 Not found
+// @Failure 500 Internal server error
 // @Accept json
 // @router /boards [get]
 func (this *BoardController) GetAllBoards() {
 	boards, err := models.GetAllBoards()
 
 	if err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("get all  boards error:" + err.Error()))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -114,7 +111,8 @@ func (this *BoardController) GetAllBoards() {
 // @Title Delete board
 // @Summary Delete board by ID
 // @Success 200
-// @Failure 404 Not found
+// @Failure 400 Bad request, invalid board id
+// @Failure 500 Internal server error
 // @Accept json
 // @router /board/:id:int [delete]
 func (this *BoardController) DeleteBoard() {
@@ -122,13 +120,12 @@ func (this *BoardController) DeleteBoard() {
 
 	id, err := strconv.Atoi(id_param)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid board id")
+		return
 	}
 
 	if err := models.SetBoardDeleteFlag(id, true); err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("Delete boards error:" + err.Error()))
+		utils.SetErrorStatus(this.Ctx, 500, "Internal server error")
 		return
 	}
 }

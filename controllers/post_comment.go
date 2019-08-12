@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/yhcjunsul/beego_example/models"
@@ -24,8 +25,10 @@ func (this *PostCommentController) URLMapping() {
 // @Param   contents	body	string	true	"Contents of comment"
 // @Param  	post_id		path	int		true	"post id"
 // @Success 200
-// @Failure 400 Bad Request
-// @Failure 404 Not found
+// @Failure 400 Bad request, invalid post id
+// @Failure 400 Bad request, invalid body contents
+// @Failure 404 Not found post
+// @Failure 500 Internal server error
 // @Accept json
 // @router /post/:postId:int/post_comment [post]
 func (this *PostCommentController) CreatePostComment() {
@@ -33,21 +36,18 @@ func (this *PostCommentController) CreatePostComment() {
 
 	post_id, err := strconv.Atoi(this.Ctx.Input.Param(":postId"))
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid post id")
 		return
 	}
 
 	if err := utils.UnmarshalRequestJson(this.Ctx.Input.RequestBody, &comment); err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid body contents")
 		return
 	}
 
 	comment.Post, err = models.FindPostById(post_id)
 	if err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("Not found"))
+		utils.SetErrorStatus(this.Ctx, http.StatusNotFound, "Not found post")
 		return
 	}
 
@@ -55,8 +55,7 @@ func (this *PostCommentController) CreatePostComment() {
 	comment.Ip = ip
 
 	if err = models.AddPostComment(&comment); err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte(err.Error()))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 
@@ -67,23 +66,21 @@ func (this *PostCommentController) CreatePostComment() {
 // @Summary Get post comments by post
 // @Param post_id 	path	int	true	"post id"
 // @Success 200 {array} models.PostComment
-// @Failure 400 Bad request
-// @Failure 404 Not found
+// @Failure 400 Bad request, invalid post id
+// @Failure 404 Not found post
 // @Accept json
 // @router /post/:postId:int/post_comments [get]
 func (this *PostCommentController) GetPostCommentsByPost() {
 	post_id, err := strconv.Atoi(this.Ctx.Input.Param(":postId"))
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad Request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid post id")
 		return
 	}
 
 	post := models.Post{Id: post_id}
 	comments, err := models.GetPostCommentsByPost(&post)
 	if err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("Not found post"))
+		utils.SetErrorStatus(this.Ctx, http.StatusNotFound, "Not found post")
 		return
 	}
 
@@ -95,7 +92,8 @@ func (this *PostCommentController) GetPostCommentsByPost() {
 // @Title Delete post comment
 // @Summary Delete post comment by ID
 // @Success 200
-// @Failure 404 Not found
+// @Failure 400 Bad request, invalid post comment
+// @Failure 500 Internal server error
 // @Accept json
 // @router /post_comment/:id:int [delete]
 func (this *PostCommentController) DeletePostComment() {
@@ -103,13 +101,12 @@ func (this *PostCommentController) DeletePostComment() {
 
 	id, err := strconv.Atoi(id_param)
 	if err != nil {
-		this.Ctx.Output.SetStatus(400)
-		this.Ctx.Output.Body([]byte("Bad request"))
+		utils.SetErrorStatus(this.Ctx, http.StatusBadRequest, "Bad request, invalid post comment id")
+		return
 	}
 
 	if err := models.SetPostCommentDeleteFlag(id, true); err != nil {
-		this.Ctx.Output.SetStatus(404)
-		this.Ctx.Output.Body([]byte("Delete post comment error:" + err.Error()))
+		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
 }
