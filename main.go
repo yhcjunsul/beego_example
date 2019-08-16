@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	utils.InitFileLog()
 	utils.InitSql()
 	models.InitTestSetting()
 

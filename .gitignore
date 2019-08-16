@@ -17,5 +17,6 @@ static/*
 swagger/*
 swagger.zip
 views/*
+logs/*
 
 *.tmp
