@@ -24,7 +24,7 @@ func AddCategory(c *BoardCategory) error {
 		return errors.Wrap(err, "insert fail")
 	}
 
-	c = &category
+	*c = category
 	beego.Info("Success to add category, id:%d, category name:%s", id, category.Name)
 
 	return nil

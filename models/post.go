@@ -35,6 +35,8 @@ func AddPost(p *Post) error {
 		return errors.Wrap(err, "insert fail")
 	}
 
+	*p = post
+
 	beego.Info(fmt.Sprintf("Success to add post, id:%d, title:%s, board name:%s, ip:%s",
 		p.Id, p.Title, p.Board.Name, p.Ip))
 

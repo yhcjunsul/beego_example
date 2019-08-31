@@ -37,6 +37,8 @@ func AddReport(r *Report) error {
 		return errors.Wrap(err, "insert fail")
 	}
 
+	*r = report
+
 	beego.Info("Success to add report, id:%d, report reason id:%d",
 		id, r.ReportReason.Id)
 

@@ -10,7 +10,7 @@ import (
 
 func main() {
 	utils.InitFileLog()
-	utils.InitSql()
+	utils.InitSql("default")
 	models.InitTestSetting()
 
 	if beego.BConfig.RunMode == "dev" {

@@ -24,9 +24,9 @@ func (this *BoardController) URLMapping() {
 // @Title Create board
 // @Summary Create board
 // @Description Create board using name and category id
-// @Param   name				body	string	true	"Name of board category"
-// @Param	board_category_id 	path	int		true	"category id"
-// @Success 200
+// @Param   name				body	string	true	"Name of board"
+// @Param   board_category_id   path    int     true    "Category id"
+// @Success 200 {object} models.Board
 // @Failure 400 Bad Request, invalid category id
 // @Failure 400 Bad request, invalid body contents
 // @Failure 404 Not found category
@@ -58,7 +58,10 @@ func (this *BoardController) CreateBoard() {
 		return
 	}
 
-	beego.Info("new board, board name:%s", board.Name)
+	this.Data["json"] = board
+	this.ServeJSON()
+
+	beego.Info("new board, board id:", board.Id, ", board name:", board.Name)
 }
 
 // @Title Get boards by category

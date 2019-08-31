@@ -26,7 +26,7 @@ func (this *PostController) URLMapping() {
 // @Param   title		body	string	true	"Title of post"
 // @Param   contents	body	string	true	"Contents of post"
 // @Param  	board_id	path	int		true	"board id"
-// @Success 200
+// @Success 200 {object} models.Post
 // @Failure 400 Bad request, invalid board id
 // @Failure 400 Bad request, invalid body contents
 // @Failure 404 Not found board
@@ -60,6 +60,9 @@ func (this *PostController) CreatePost() {
 		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
+
+	this.Data["json"] = post
+	this.ServeJSON()
 
 	beego.Info("new post, post title:%s", post.Title)
 }

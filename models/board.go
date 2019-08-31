@@ -31,8 +31,10 @@ func AddBoard(b *Board) error {
 			id, b.Name, b.BoardCategory.Name)
 	}
 
-	beego.Info("Success to add board, id:%d, board name:%s, category name:%s",
-		id, b.Name, b.BoardCategory.Name)
+	*b = board
+
+	beego.Info("Success to add board, id:", id, ", board id:", b.Id,
+		", board name:", b.Name, ", category name:", b.BoardCategory.Name)
 
 	return nil
 }

@@ -24,7 +24,7 @@ func (this *PostCommentReplyController) URLMapping() {
 // @Summary Create post comment reply
 // @Param   contents	body	string	true	"Contents of comment reply"
 // @Param  	comment_id	path	int		true	"comment id"
-// @Success 200
+// @Success 200 {object} models.PostCommentReply
 // @Failure 400 Bad request, invalid comment id
 // @Failure 400 Bad request, invalid body contents
 // @Failure 404 Not found comment
@@ -58,6 +58,9 @@ func (this *PostCommentReplyController) CreatePostCommentReply() {
 		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
+
+	this.Data["json"] = reply
+	this.ServeJSON()
 
 	beego.Info("new post comment reply, user ip:%s", reply.Ip)
 }

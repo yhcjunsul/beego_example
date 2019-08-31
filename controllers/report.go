@@ -46,7 +46,7 @@ func (this *ReportController) URLMapping() {
 // @Param   detail                  body    string  false   "detail description of report"
 // @Param   report_reason_id	    body	int    	true	"id of report reason"
 // @Param   post_id                 body    int     true    "post id"
-// @Success 200
+// @Success 200 {object} models.Report
 // @Failure 400 Bad Request, invalid body contents
 // @Failure 500 Internal server error
 // @Accept json
@@ -86,6 +86,9 @@ func (this *ReportController) CreatePostReport() {
 		return
 	}
 
+	this.Data["json"] = report
+	this.ServeJSON()
+
 	beego.Info("new post report, post id:%d, report reason id:%d", param.PostId, param.ReportReasonId)
 }
 
@@ -94,7 +97,7 @@ func (this *ReportController) CreatePostReport() {
 // @Param   detail                  body    string  false   "detail description of report"
 // @Param   report_reason_id	    body	int    	true	"id of report reason"
 // @Param   post_comment_id         body    int     true    "post comment id"
-// @Success 200
+// @Success 200 {object} models.Report
 // @Failure 400 Bad request, invalid body contents
 // @Failure 500 Internal server error
 // @Accept json
@@ -134,6 +137,9 @@ func (this *ReportController) CreatePostCommentReport() {
 		return
 	}
 
+	this.Data["json"] = report
+	this.ServeJSON()
+
 	beego.Info("new post comment report, post comment id:%d, report reason id:%d", param.PostCommentId, param.ReportReasonId)
 }
 
@@ -142,11 +148,11 @@ func (this *ReportController) CreatePostCommentReport() {
 // @Param   detail                  body    string  false   "detail description of report"
 // @Param   report_reason_id	    body	int    	true	"id of report reason"
 // @Param   post_comment_reply_id         body    int     true    "post comment reply id"
-// @Success 200
+// @Success 200 {object} models.Report
 // @Failure 400 Bad request, invalid body contents
 // @Failure 500 Internal server error
 // @Accept json
-// @router /report/post_comment [post]
+// @router /report/post_comment_reply [post]
 func (this *ReportController) CreatePostCommentReplyReport() {
 	param := PostCommentReplyReportCreateParam{}
 	report := models.Report{}
@@ -181,6 +187,9 @@ func (this *ReportController) CreatePostCommentReplyReport() {
 		utils.SetErrorStatus(this.Ctx, http.StatusInternalServerError, "Internal server error")
 		return
 	}
+
+	this.Data["json"] = report
+	this.ServeJSON()
 
 	beego.Info("new post comment reply report, post comment reply id:%d, report reason id:%d",
 		param.PostCommentReplyId, param.ReportReasonId)

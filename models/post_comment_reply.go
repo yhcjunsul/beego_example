@@ -31,6 +31,8 @@ func AddPostCommentReply(r *PostCommentReply) error {
 		return errors.Wrap(err, "insert fail")
 	}
 
+	*r = reply
+
 	beego.Info(fmt.Sprintf("Success to add commment reply, id:%d, comment id:%s, ip:%s",
 		r.Id, r.PostComment.Id, r.Ip))
 

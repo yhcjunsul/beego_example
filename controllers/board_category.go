@@ -24,7 +24,7 @@ func (this *BoardCategoryController) URLMapping() {
 // @Summary Create board category
 // @Description Create board category using name
 // @Param   name	body	string	true	"Name of board category"
-// @Success 200
+// @Success 200 {object} models.BoardCategory
 // @Failure 400 Bad request, invalid body contents
 // @Failure 500 Internal server error
 // @Accept json
@@ -42,7 +42,10 @@ func (this *BoardCategoryController) CreateBoardCategory() {
 		return
 	}
 
-	beego.Info("new category, category name:%s", category.Name)
+	this.Data["json"] = category
+	this.ServeJSON()
+
+	beego.Info("new category, category id:", category.Id, ", category name:", category.Name)
 }
 
 // @Title Get all board category
